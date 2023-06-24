@@ -5,14 +5,33 @@ from random import randint
 class NumberGuessingGame:
     def __init__(self, master):
         self.master = master
-        self.number_range = (0, 100)  # Default range, can be changed
-        self.number_to_guess = self.generate_random_number()
+        self.number_range = [0, 100]  # Default range, can be changed
 
         self.main_frame = tk.Frame(self.master)
         self.main_frame.pack()
 
+        self.range_frame = tk.Frame(self.main_frame)
+        self.range_frame.pack()
+
+        self.min_range_label = tk.Label(self.range_frame, text="Min Range:")
+        self.min_range_label.pack(side=tk.LEFT)
+
+        self.min_range_entry = tk.Entry(self.range_frame)
+        self.min_range_entry.pack(side=tk.LEFT)
+
+        self.max_range_label = tk.Label(self.range_frame, text="Max Range:")
+        self.max_range_label.pack(side=tk.LEFT)
+
+        self.max_range_entry = tk.Entry(self.range_frame)
+        self.max_range_entry.pack(side=tk.LEFT)
+
+        self.set_range_button = tk.Button(self.range_frame, text="Set Range", command=self.set_range)
+        self.set_range_button.pack(side=tk.LEFT)
+
         self.info_label = tk.Label(self.main_frame, text="Guess the number in Spanish")
         self.info_label.pack()
+
+        self.number_to_guess = self.generate_random_number()
 
         self.number_label = tk.Label(self.main_frame, text=self.number_to_guess)
         self.number_label.pack()
@@ -26,6 +45,20 @@ class NumberGuessingGame:
 
     def generate_random_number(self):
         return randint(*self.number_range)
+
+    def set_range(self):
+        try:
+            min_range = int(self.min_range_entry.get())
+            max_range = int(self.max_range_entry.get())
+            if min_range < max_range:
+                self.number_range = [min_range, max_range]
+                self.number_to_guess = self.generate_random_number()
+                self.number_label.config(text=self.number_to_guess)
+                self.info_label.config(text="Number range set. Guess the number in Spanish.", fg='black')
+            else:
+                self.info_label.config(text="Invalid range. Min should be less than Max.", fg='red')
+        except ValueError:
+            self.info_label.config(text="Please enter valid integers for the range.", fg='red')
 
     def check_answer(self, event=None):
         answer = self.entry.get()
